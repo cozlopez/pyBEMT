@@ -1,7 +1,9 @@
 import numpy as np
 
 # Syntax: np.linspace(start, stop, num_of_values)
-radius_stations = np.linspace(45, 10, 17)
+radius_stations = np.linspace(0.3, 3.9, 17)
+# remove comas from the list and convert to float
+
 
 print(radius_stations)
 

@@ -24,7 +24,7 @@ def generate_poly_chords(coefficients, x_points):
 def objective_function(coefficients):
     chords = generate_poly_chords(coefficients, r_over_R)
     
-    if np.any(chords < 0.05) or np.any(chords > 0.5):
+    if np.any(chords < 0.2) or np.any(chords > 0.7):
         return 1e6  
         
     config['rotor']['chord'] = ' '.join(map(str, chords))
@@ -68,13 +68,13 @@ if __name__ == "__main__":
     print("Initializing Global Optimization via Differential Evolution...\n")
     
     bounds = [
-        (-0.05, 0.05),   # c3 
-        (-0.2, 0.1),     # c2 
-        (-0.5, 0.2),     # c1 
-        (0.1, 0.4)       # c0 
+        (0, 0.4),   # c3 
+        (-0.7, -0.5),     # c2 
+        (-0.1, 0.5),     # c1 
+        (0.4, 0.6)       # c0 
     ]
     
-    MAX_GENERATIONS = 40  # Set your maximum iterations here
+    MAX_GENERATIONS = 5  # Set your maximum iterations here
     
     # Instantiate our progress tracker
     progress_tracker = OptimizationProgress(max_iterations=MAX_GENERATIONS)
