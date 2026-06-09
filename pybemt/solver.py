@@ -219,8 +219,8 @@ class Solver:
                 try:
                     phi = optimize.bisect(sec.func, 0.01*pi, 0.9*pi, args=(v, omega))
                 except ValueError as e:
-                    print(e)
-                    print('Bisect failed, switching to brute solver')
+                    #print(e)
+                    #print('Bisect failed, switching to brute solver')
                     phi = self.brute_solve(sec, v, omega)
 
             

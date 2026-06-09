@@ -18,7 +18,7 @@ project_root = os.path.dirname(current_dir)              # .../pyBEMT
 sys.path.insert(0, project_root)
 #TODO: Update the value of the ini file so that it takes into accound the change in airfoil
 #TODO: Fix 3d plotting call becouse it currently takes whatever is in the ini file (first file)
-ini_filepath = os.path.join(current_dir, 'testdatatata.ini')
+ini_filepath = os.path.join(current_dir, 'samplecopy2.ini')
 config = configparser.ConfigParser()
 config.read(ini_filepath)
 plot_efficiency = False
@@ -118,6 +118,7 @@ if plot_efficiency:
 
 if plot_power:
     #%%
+    print(df2['P'])
     # 2. Initialize a single figure window with 2 separate subplots (stacked vertically)
     fig, (ax1, ax2,ax3) = plt.subplots(3, 1, figsize=(8, 12), sharex=True)
     speed_of_sound = 316  # m/s at sea level
@@ -137,15 +138,18 @@ if plot_power:
 
     # --- SUBPLOT 2: POWER (Bottom) ---
     # BEMT Line
-    ax2.plot(df2['rpm'], df2['P']/1000000, 'C1-', linewidth=2, label='BEMT Power(MW)')
+    
+
+    
+    ax2.plot(df2['rpm'], df2['P'], 'C1-', linewidth=1, label='BEMT Power(W)',color = 'green')
     ax22 = ax2.twinx()
     ax2.plot(df2['rpm'], df2['P']/745.7, 'C1--', linewidth=1, label='BEMT Power (HP)')
     ax2.axvline(mach_1_rpm, color='C2', linestyle='--', label=f'Mach 1 RPM ({mach_1_rpm:.0f} RPM)')
 
     #ax2.set_xlim(0, mach_1_rpm*1.25)
     ax2.set_xlabel('Rotational Speed (RPM)')
-    ax22.set_ylabel('Power (MW)')
-    ax2.set_ylabel('Power (HP)')
+    ax2.set_ylabel('Power (W)')
+    ax22.set_ylabel('Power (HP)')
     ax2.legend(loc='upper left')
     ax2.grid(True, linestyle='--', alpha=0.5)
 

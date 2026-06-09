@@ -267,6 +267,7 @@ class Section:
 
         a, ap = self.induction_factors(phi)
         
+        # print(f"phi = {phi}, C={C}, a={a}, v_inf={v_inf}, radius={self.radius}, ap={ap}")
         resid = sin(phi)/(1 + C*a) - v_inf*cos(phi)/(omega*self.radius*(1 - C*ap))
         
         self.a = a

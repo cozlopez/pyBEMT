@@ -99,7 +99,8 @@ def load_airfoil(name):
     
     this_dir = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(this_dir, 'airfoils', name + '.dat')
-    
+    #path = os.path.join('examples', 'airfoils', name + 'mod.dat')
+
     a.name = name
     
     a.alpha_, a.Cl_, a.Cd_ = np.loadtxt(path, skiprows=14, unpack=True)

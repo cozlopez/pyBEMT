@@ -3,7 +3,8 @@ import numpy as np
 import scipy
 from isa import get_ISA
 config = configparser.ConfigParser()
-config.read('examples\\sample copy.ini')
+directory = 'examples\\samplecopy2.ini'
+config.read(directory)
 
 # Read scalar numbers
 rpm = config.getint('case', 'rpm')
@@ -13,12 +14,12 @@ def generate_conditions_data(power: float= 4.6e6):
     n_blades = config.getint("rotor", "nblades")
     print(radius_stations)
     #radius_stations = np.array([float(x) for x in config.get('rotor', 'radius').split()])
-    radius_stations = np.linspace(config.getfloat("rotor", "radius_hub"), config.getfloat("rotor", "diameter") / 2, num=17, endpoint=False)
     P, rho, tempK, speed_of_sound = get_ISA(config.getfloat('additionaldata', 'altitude'))
     mach_number = config.getfloat('additionaldata', 'Machnumber')
+    config['rotor']['radius'] = str(radius_stations)
     v_inf = mach_number * speed_of_sound
     config['case']['v_inf'] = str(v_inf)
-
+    config['fluid']['rho'] = str(rho)
     # rotational_velocity_at_stations = radius_stations * (np.array([rpm]) / 60*2*np.pi)
 
     airfoilname = config.get('rotor', 'section').split()[0]  # Get the first word (e.g., "NACA_63815mod")
@@ -29,18 +30,49 @@ def generate_conditions_data(power: float= 4.6e6):
     Cl_opt = cl[max_cl_cd_index]
 
     omega = np.array([rpm]) / 60*2*np.pi
-    chord, pitch = generate_chord_pitch(rho, omega, power, v_inf, config.getfloat("rotor", "diameter") / 2, radius_stations, n_blades, Cl_opt, alpha_opt)
-    AF = get_activity_factor(config.getfloat("rotor", "diameter") / 2, radius_stations, chord)
-    print(f"activity factor = {AF}")
-
-    config['rotor']['chord'] = ' '.join(map(str, chord.flatten()))
-    config['rotor']['pitch'] = ' '.join(map(str, pitch.flatten()))
-    with open('examples\\sample copy.ini', 'w') as configfile:
+    twist = generate_pitch(alpha_opt,v_inf,radius_stations)
+    #chord, pitch = generate_chord_pitch(rho, omega, power, v_inf, config.getfloat("rotor", "diameter") / 2, radius_stations, n_blades, Cl_opt, alpha_opt)
+    #AF = get_activity_factor(config.getfloat("rotor", "diameter") / 2, radius_stations, chord)
+    #print(f"activity factor = {AF}")
+    sweep = np.rad2deg(generate_sweep(v_inf, radius_stations, speed_of_sound))
+    print(f"sweep = {sweep}")
+    config['rotor']['sweep'] = ' '.join(map(str, sweep.flatten()))
+    config['rotor']['pitch'] = ' '.join(map(str, twist.flatten()))
+    with open(directory, 'w') as configfile:
         config.write(configfile)    
     print(f"Optimal angle of attack (alpha) for maximum lift-to-drag ratio: {alpha_opt:.2f} degrees")
 
 
 
+def generate_pitch(alpha_opt: float, V_inf: float, radius_stations: list):
+    rpm = config.getint('case', 'rpm')
+    omega = rpm * (2*np.pi)/60
+
+    pitch = []
+    for r in radius_stations:
+        alpha_inf = np.atan(V_inf/(omega*r))
+        pitch.append(np.rad2deg(np.deg2rad(alpha_opt) + alpha_inf))     # + alpha_i
+
+    return np.array(pitch)
+
+
+def generate_sweep(V_inf: float, radius_stations: list, speed_of_sound: float):
+    rpm = config.getint('case', 'rpm')
+    omega = rpm * (2*np.pi)/60
+    k = 0.87
+    mach_dd = 0.7   #or: k - (Cl_M0/10) - t_c
+
+    sweep = []
+    for r in radius_stations:
+        V_app = np.sqrt(V_inf**2 + (omega*r)**2)
+        mach_app = V_app/speed_of_sound
+        if mach_app >= mach_dd:
+            sweep_temp = np.acos(mach_dd/mach_app)
+            sweep.append(sweep_temp)
+        else:
+            sweep.append(0)
+
+    return np.array(sweep)
 
 def generate_chord_pitch(density:float, omega: float, power: float, V_inf: float, max_radius: float, 
                          radius: list, n_blades: int, Cl_opt: float, alpha_opt: float):
@@ -102,3 +134,4 @@ def get_activity_factor(max_radius: list, radius: list, chord: list):
 
 if __name__ == "__main__":
     generate_conditions_data()
+    
