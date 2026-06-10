@@ -18,11 +18,11 @@ project_root = os.path.dirname(current_dir)              # .../pyBEMT
 sys.path.insert(0, project_root)
 #TODO: Update the value of the ini file so that it takes into accound the change in airfoil
 #TODO: Fix 3d plotting call becouse it currently takes whatever is in the ini file (first file)
-ini_filepath = os.path.join(current_dir, 'samplecopy2.ini')
+ini_filepath = os.path.join(current_dir, 'finalinputdata','samplecopy2.ini')
 config = configparser.ConfigParser()
 config.read(ini_filepath)
-plot_efficiency = False
-plot_power = True
+plot_efficiency = True
+plot_power = False
 plot_shape = False
 
 #Airfoils = np.array(['CLARKY', 'GOE_408', 'GOE_450', 'NACA_4412', 'NACA_63815', 'NRELS814'])

@@ -218,7 +218,7 @@ def plot_3d_profiles(radius_stations, chords, pitch_angles, sweep, airfoil_path)
     ax.set_xlabel("X (m)")
     ax.set_ylabel("Y (m)")
     ax.set_zlabel("Radial Station Z (m)")
-    ax.set_aspect("equal")
+    ax.
     ax.grid(False)
     ax.legend(loc="upper left")
     ax.view_init(elev=0, azim=0)
